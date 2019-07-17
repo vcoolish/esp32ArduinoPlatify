@@ -1,3 +1,5 @@
+#include <HTTPClientESP32Ex.h>
+#include "FirebaseESP32.h"
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_Sensor.h>
@@ -12,29 +14,44 @@
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
+#define FIREBASE_HOST "esp32plantifytest.firebaseio.com" //Do not include https:// in FIREBASE_HOST
+#define FIREBASE_AUTH "HbdM9xdt9v0va4xuB7RNrbMguDw8tqXpHlK4p8Hf"
+#define WIFI_SSID "SpaceX"
+#define WIFI_PASSWORD "9876543210"
+
 //Adafruit_BME280 bme; // I2C
 //Adafruit_BME280 bme(BME_CS); // hardware SPI
 Adafruit_BME280 bme(BME_CS, BME_MOSI, BME_MISO, BME_SCK); // software SPI
-
+FirebaseData firebaseData;
 unsigned long delayTime;
-
+String path = "/ESP32_Test";
 uint16_t Get_moisture_percentage(void);
 
 void setup() {
     Serial.begin(115200);
     Serial.println(F("BME280 test"));
-
+    
 //    Wire.begin(BME_SDA, BME_SCK);
-
-    if (! bme.begin(&Wire)) {
-        Serial.println("Could not find a valid BME280 sensor, check wiring!");
-        while (1);
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    while (WiFi.status() != WL_CONNECTED) {
+      Serial.print(".");
+      delay(300);
     }
 
+    Serial.println();
+    Serial.print("Connected with IP: ");
+    Serial.println(WiFi.localIP());
+    Serial.println();
+    if (! bme.begin(&Wire)) {
+        Serial.println("Could not find a valid BME280 sensor, check wiring!");
+        while(1);
+    }
+    Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+    Firebase.reconnectWiFi(true);
     Serial.println("-- Default Test --");
     Serial.println("normal mode, 16x oversampling for all, filter off,");
     Serial.println("0.5ms standby period");
-    delayTime = 5000;
+    delayTime = 900000;
     
     
     // For more details on the following scenarious, see chapter
@@ -150,6 +167,30 @@ void printValues() {
     Serial.println(" ");
     
     Serial.println();
+
+    String jsonStr = "{\"temperature\":\"" + String(bme.readTemperature()) + " *C\", " + 
+                       "\"pressure\":\"" + String(bme.readPressure() / 100.0F) + " hPa\", " + 
+                       "\"altitude\":\"" + String(bme.readAltitude(SEALEVELPRESSURE_HPA)) + " m\", "
+                       "\"humidity\":\"" + String(bme.readHumidity()) + " %" + "\", "
+                       "\"moisture\":\"" + String(Get_moisture_percentage()) + " %\" }";
+
+    if (Firebase.pushJSON(firebaseData, path + "/data", jsonStr))
+    {
+      Serial.println("PASSED");
+      Serial.println("PATH: " + firebaseData.dataPath());
+      Serial.print("PUSH NAME: ");
+      Serial.println(firebaseData.pushName());
+      Serial.println("ETag: " + firebaseData.ETag());
+      Serial.println("------------------------------------");
+      Serial.println();
+    }
+    else
+    {
+      Serial.println("FAILED");
+      Serial.println("REASON: " + firebaseData.errorReason());
+      Serial.println("------------------------------------");
+      Serial.println();
+    }
 }
 
 uint16_t Get_moisture_percentage(void) {
