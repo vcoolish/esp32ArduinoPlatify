@@ -15,15 +15,16 @@
 
 #define TEMPERATURE_PIN 4
 #define MOISTURE_PIN 36
-#define COOLER_PIN 10
-#define PUMP_PIN 11
-#define LED_PIN 12
+#define PUMP_PIN 26
+#define LED_PIN 32
+#define COOLER2_PIN 33
+#define COOLER_PIN 25
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
 #define FIREBASE_HOST "esp32plantifytest.firebaseio.com" //Do not include https:// in FIREBASE_HOST
 #define FIREBASE_AUTH "HbdM9xdt9v0va4xuB7RNrbMguDw8tqXpHlK4p8Hf"
-#define WIFI_SSID "TitaniumLabs-2G"
+#define WIFI_SSID "TL-2.4G"
 #define WIFI_PASSWORD "yodamaster"
 
 RTC_DS3231 rtc;
@@ -82,6 +83,7 @@ void setup() {
       Serial.print(".");
       delay(300);
     }
+    pinMode(COOLER2_PIN, OUTPUT);
     pinMode(COOLER_PIN, OUTPUT);
     pinMode(PUMP_PIN, OUTPUT);
     pinMode(LED_PIN, OUTPUT);
@@ -107,84 +109,8 @@ void setup() {
      Serial.println("RTC lost power, lets set the time!");
       rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
     }
-    delayTime = 900000;
+    delayTime = 20000;
     
-    
-    // For more details on the following scenarious, see chapter
-    // 3.5 "Recommended modes of operation" in the datasheet
-    
-/*
-    // weather monitoring
-    Serial.println("-- Weather Station Scenario --");
-    Serial.println("forced mode, 1x temperature / 1x humidity / 1x pressure oversampling,");
-    Serial.println("filter off");
-    bme.setSampling(Adafruit_BME280::MODE_FORCED,
-                    Adafruit_BME280::SAMPLING_X1, // temperature
-                    Adafruit_BME280::SAMPLING_X1, // pressure
-                    Adafruit_BME280::SAMPLING_X1, // humidity
-                    Adafruit_BME280::FILTER_OFF   );
-                      
-    // suggested rate is 1/60Hz (1m)
-    delayTime = 60000; // in milliseconds
-*/
-
-/*    
-    // humidity sensing
-    Serial.println("-- Humidity Sensing Scenario --");
-    Serial.println("forced mode, 1x temperature / 1x humidity / 0x pressure oversampling");
-    Serial.println("= pressure off, filter off");
-    bme.setSampling(Adafruit_BME280::MODE_FORCED,
-                    Adafruit_BME280::SAMPLING_X1,   // temperature
-                    Adafruit_BME280::SAMPLING_NONE, // pressure
-                    Adafruit_BME280::SAMPLING_X1,   // humidity
-                    Adafruit_BME280::FILTER_OFF );
-                      
-    // suggested rate is 1Hz (1s)
-    delayTime = 1000;  // in milliseconds
-*/
-
-/*    
-    // indoor navigation
-    Serial.println("-- Indoor Navigation Scenario --");
-    Serial.println("normal mode, 16x pressure / 2x temperature / 1x humidity oversampling,");
-    Serial.println("0.5ms standby period, filter 16x");
-    bme.setSampling(Adafruit_BME280::MODE_NORMAL,
-                    Adafruit_BME280::SAMPLING_X2,  // temperature
-                    Adafruit_BME280::SAMPLING_X16, // pressure
-                    Adafruit_BME280::SAMPLING_X1,  // humidity
-                    Adafruit_BME280::FILTER_X16,
-                    Adafruit_BME280::STANDBY_MS_0_5 );
-    
-    // suggested rate is 25Hz
-    // 1 + (2 * T_ovs) + (2 * P_ovs + 0.5) + (2 * H_ovs + 0.5)
-    // T_ovs = 2
-    // P_ovs = 16
-    // H_ovs = 1
-    // = 40ms (25Hz)
-    // with standby time that should really be 24.16913... Hz
-    delayTime = 41;
-    */
-    
-    /*
-    // gaming
-    Serial.println("-- Gaming Scenario --");
-    Serial.println("normal mode, 4x pressure / 1x temperature / 0x humidity oversampling,");
-    Serial.println("= humidity off, 0.5ms standby period, filter 16x");
-    bme.setSampling(Adafruit_BME280::MODE_NORMAL,
-                    Adafruit_BME280::SAMPLING_X1,   // temperature
-                    Adafruit_BME280::SAMPLING_X4,   // pressure
-                    Adafruit_BME280::SAMPLING_NONE, // humidity
-                    Adafruit_BME280::FILTER_X16,
-                    Adafruit_BME280::STANDBY_MS_0_5 );
-                      
-    // Suggested rate is 83Hz
-    // 1 + (2 * T_ovs) + (2 * P_ovs + 0.5)
-    // T_ovs = 1
-    // P_ovs = 4
-    // = 11.5ms + 0.5ms standby
-    delayTime = 12;
-*/
-
     Serial.println();
 }
 
@@ -272,6 +198,26 @@ void printValues() {
     Serial.print("clockTemperature: ");
     Serial.print(rtc.getTemperature());
     Serial.println(" C");
+
+    Toggle_pump_light(0);
+    Serial.print("Pump is On");
+    Serial.println();
+    delay(10000);
+    Toggle_pump_light(1);
+    Serial.print("Pump is Off");
+    Serial.println();
+}
+
+void Toggle_pump_light(int value) {
+    digitalWrite(COOLER_PIN, value);
+    Serial.print("Cooler");
+    delay(2000);
+    digitalWrite(COOLER2_PIN, value);
+    Serial.print("cooler2");
+    delay(2000);
+    digitalWrite(PUMP_PIN, value);
+    Serial.print("Pump");
+    delay(2000);
 }
 
 uint16_t Get_moisture_percentage(void) {
