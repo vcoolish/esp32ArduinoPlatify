@@ -445,6 +445,7 @@ void setup(){
     delay(1000);
     Serial.println("Connecting to WiFi..");
   }
+  setMDNSName("esp32-growbox");
 
   // Print ESP Local IP Address
   Serial.println(WiFi.localIP());
