@@ -1,3 +1,7 @@
+const envType = process.env.NODE_ENV || 'development';
+const config = require('./config')[envType];
+console.log('process.env.NODE_ENV', envType);
+
 const WebSocket = require('ws');
 
 // const app = require('express')();
@@ -33,7 +37,7 @@ setState({ 'test_id': {} });
 console.log(getState());
 
 // websockets client
-const wss = new WebSocket.Server({ port: 8080 });
+const wss = new WebSocket.Server({ port: config.wsWebserverPort });
 
 wss.on('connection', function connection(ws, req) {
   console.log("connected ", req.socket.remoteAddress);
@@ -44,11 +48,13 @@ wss.on('connection', function connection(ws, req) {
     wss.clients.forEach(function each(client) {
       if (client !== ws && client.readyState === WebSocket.OPEN) {
         client.send(message);
+      } else {
+        client.send(message);
       }
     });
+
   });
 
-  ws.send('something');
 });
 
 function parseMessage(client, message) {
@@ -79,3 +85,7 @@ function parseMessage(client, message) {
 // ws.on('message', function incoming(data) {
 //   console.log(data);
 // });
+
+module.exports = {
+  wss,
+}
