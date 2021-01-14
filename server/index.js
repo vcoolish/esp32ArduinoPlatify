@@ -29,12 +29,7 @@ const types = { connectionData: "CONNECTION_DATA", command: "COMMAND", data: "DA
 //   uid, type, payload
 // }
 
-const create = require('zustand/vanilla').default;
-
-const store = create(() => ({}));
-const { getState, setState, subscribe, destroy } = store;
-setState({ 'test_id': {} });
-console.log(getState());
+const clientsStore = {};
 
 // websockets client
 const wss = new WebSocket.Server({ port: config.wsWebserverPort });
@@ -45,6 +40,7 @@ wss.on('connection', function connection(ws, req) {
   ws.on('message', function incoming(message) {
     console.log('received: %s', message);
 
+    parseMessage(ws, message);
     wss.clients.forEach(function each(client) {
       if (client !== ws && client.readyState === WebSocket.OPEN) {
         client.send(message);
@@ -61,7 +57,7 @@ function parseMessage(client, message) {
   switch (message.type) {
     case types.connectionData:
       const uid = message.uid;
-      setState({ uid: client });
+      clientsStore[uid] = client;
       break;
     case types.command:
     case types.data:
