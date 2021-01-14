@@ -23,11 +23,8 @@ const WebSocket = require('ws');
 //   console.log('listening on *:' + PORT);
 // });
 
-const types = { connectionData: "CONNECTION_DATA", command: "COMMAND", data: "DATA" };
 
-// {
-//   uid, type, payload
-// }
+const types = { connectionData: "CONNECTION_DATA", command: "COMMAND", data: "DATA" };
 
 const clientsStore = {};
 
@@ -65,22 +62,6 @@ function parseMessage(client, message) {
       break;
   }
 }
-
-// const ws = new WebSocket('ws://192.168.0.109/ws');
-
-// ws.on('open', function open() {
-//   console.log('The socket is open.');
-//   let flag = false;
-//   setInterval(() => {
-//     flag = !flag;
-//     const data = "toggle";
-//     ws.send(data);
-//   }, 1000)
-// });
-
-// ws.on('message', function incoming(data) {
-//   console.log(data);
-// });
 
 module.exports = {
   wss,
