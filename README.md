@@ -7,7 +7,11 @@ To install ESP32 Arduino to Arduino IDE follow some instructions:
 1. [RU](https://voltiq.ru/instruction-installing-esp32-board-in-arduino-ide-for-windows/)
 2. [EN](https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/)
 
-[Websocket libs](https://randomnerdtutorials.com/esp32-websocket-server-arduino/)
+[Websocket server libs](https://randomnerdtutorials.com/esp32-websocket-server-arduino/)
+
+### Arduino libs
+* [ArduinoJson](https://github.com/bblanchon/ArduinoJson) 6.17.2
+* [ArduinoWebsockets](https://github.com/gilmaimon/ArduinoWebsockets) 0.5.0
 
 ## Troubleshooting
 When you have problems with communication between board and Arduino IDE use esptool to erase flash.

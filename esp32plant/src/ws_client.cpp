@@ -1,4 +1,5 @@
 #include "ws_client.h"
+#include <ArduinoJson.h>
 #include <ArduinoWebsockets.h>
 #include <Arduino.h>
 
@@ -6,19 +7,43 @@ const char *websockets_server = "ws://192.168.0.107:8080"; //server adress and p
 
 using namespace websockets;
 
-uint16_t getDeviceId()
+String mac2String(byte ar[])
 {
-#if defined(ARDUINO_ARCH_ESP32)
-  return ESP.getEfuseMac();
-#else
-  return ESP.getChipId();
-#endif
+  String s;
+  for (byte i = 0; i < 6; ++i)
+  {
+    char buf[3];
+    sprintf(buf, "%02X", ar[i]); // J-M-L: slight modification, added the 0 in the format for padding
+    s += buf;
+    if (i < 5)
+      s += ':';
+  }
+  return s;
+}
+
+String getDeviceId()
+{
+  return mac2String((byte *)ESP.getEfuseMac());
+}
+
+void handleMessageData(String json) {
+  DynamicJsonDocument doc(1024);
+  deserializeJson(doc, json);
+
+  const String type = doc["type"];
+  const String payload = doc["payload"];
+  Serial.println("Parsed type " + type + "; payload: " + payload + ".");
 }
 
 void onMessageCallback(WebsocketsMessage message)
 {
   Serial.print("Got Message: ");
   Serial.println(message.data());
+  
+  if (message.isText())
+  {
+    handleMessageData(message.data());
+  }
 }
 
 void onEventsCallback(WebsocketsEvent event, String data)
@@ -52,7 +77,7 @@ void ws_init()
   client.connect(websockets_server);
 
   Serial.println(String(getDeviceId()));
-  client.send("{ uid: " + String(getDeviceId()) + ", type: \"CONNECTION_DATA\" }");
+  client.send("{ \"uid\": \"" + String(getDeviceId()) + "\", \"type\": \"CONNECTION_DATA\" }");
   // Send a message
   client.send("Hi Server!");
   // Send a ping
