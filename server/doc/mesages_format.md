@@ -23,3 +23,28 @@
   type: "CONNECTION_DATA",
 }
 ```
+
+#### Message: `SENSORS_DATA`
+
+**sensors tags:** 
+- `AIR_HUMIDITY`
+- `AIR_TEMPERATURE`
+- `AIR_PRESSURE` 
+- `SOIL_TEMPERATURE`
+- `SOIL_MOISTURE`
+- `AMBIENT_LIGHT`
+- `SOIL_PH`
+- `NUTRIENT_PH`
+
+```json
+{
+  uid: "some id",
+  type: "SENSORS_DATA",
+  payload: [
+    {
+      tag: "some tag",
+      value: 1313,
+    }
+  ]
+}
+```
