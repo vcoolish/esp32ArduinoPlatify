@@ -7,6 +7,7 @@ const timeSeriesDataServise = {};
 const devicesServise = {};
 const usersServise = {};
 
+const noop = () => {};
 
 class WebSocketServer {
   constructor({ port=3001, services }) {
@@ -28,6 +29,10 @@ class WebSocketServer {
 
   run() {
     this.wss.on('connection', (ws, req) => {
+      ws.isAlive = true;
+      ws.on('pong', () => {
+        ws.isAlive = true;
+      });
       this._connectionHandler(ws, req);
     });
 
