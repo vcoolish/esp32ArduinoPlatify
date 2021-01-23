@@ -13,6 +13,9 @@ To install ESP32 Arduino to Arduino IDE follow some instructions:
 * [ArduinoJson](https://github.com/bblanchon/ArduinoJson) 6.17.2
 * [ArduinoWebsockets](https://github.com/gilmaimon/ArduinoWebsockets) 0.5.0
 
+### Other libs
+* [BME280](https://github.com/BoschSensortec/BME280_driver) *(used as source code)*
+
 ## Troubleshooting
 When you have problems with communication between board and Arduino IDE use esptool to erase flash.
 ```python
