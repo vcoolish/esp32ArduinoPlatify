@@ -88,7 +88,7 @@
 #ifndef BME280_64BIT_ENABLE /*< Check if 64-bit integer (using BME280_64BIT_ENABLE) is enabled */
 #ifndef BME280_32BIT_ENABLE /*< Check if 32-bit integer (using BME280_32BIT_ENABLE) is enabled */
 #ifndef BME280_FLOAT_ENABLE /*< If any of the integer data types not enabled then enable BME280_FLOAT_ENABLE */
-#define BME280_FLOAT_ENABLE
+// #define BME280_FLOAT_ENABLE
 #endif
 #endif
 #endif
@@ -286,7 +286,7 @@ typedef BME280_INTF_RET_TYPE (*bme280_read_fptr_t)(uint8_t reg_addr, uint8_t *re
  * @retval Non zero value -> Fail.
  *
  */
-typedef BME280_INTF_RET_TYPE (*bme280_write_fptr_t)(uint8_t reg_addr, const uint8_t *reg_data, uint32_t len,
+typedef BME280_INTF_RET_TYPE (*bme280_write_fptr_t)(uint8_t reg_addr, uint8_t *reg_data, uint32_t len,
                                                     void *intf_ptr);
 
 /*!
