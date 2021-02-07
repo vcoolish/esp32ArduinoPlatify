@@ -1,6 +1,9 @@
 #include "main.h"
 #include "advertise_services.h"
 #include "ws_client.h"
+#include "bme_sensor.h"
+#include "./lib/bme280.h"
+#include <Wire.h>
 
 // Replace with your network credentials
 const char *ssid = "PreciousLab";
@@ -98,6 +101,14 @@ void main_init()
 
   // initWebSocket();
 
+  Wire.begin(); // join i2c bus (address optional for master)
+
+  // i2c_scan();
+
+  // init sensor
+  // struct bme280_dev dev;
+  sensor_init();
+
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send_P(200, "text/html", index_html, processor);
@@ -112,4 +123,9 @@ void main_loop()
   ws_poll();
   ws.cleanupClients();
   digitalWrite(ledPin, ledState);
+
+  // print_sensor_data();
+  send_sensor_data(get_json_sensor_data());
+
+  delay(1000);
 }

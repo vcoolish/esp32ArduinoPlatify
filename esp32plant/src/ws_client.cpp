@@ -1,7 +1,6 @@
 #include "ws_client.h"
 #include <ArduinoJson.h>
 #include <ArduinoWebsockets.h>
-#include <Arduino.h>
 
 const char *websockets_server = "ws://192.168.0.107:8080"; //server adress and port
 
@@ -26,7 +25,8 @@ String getDeviceId()
   return mac2String((byte *)ESP.getEfuseMac());
 }
 
-void handleMessageData(String json) {
+void handleMessageData(String json)
+{
   DynamicJsonDocument doc(1024);
   deserializeJson(doc, json);
 
@@ -39,7 +39,7 @@ void onMessageCallback(WebsocketsMessage message)
 {
   Serial.print("Got Message: ");
   Serial.println(message.data());
-  
+
   if (message.isText())
   {
     handleMessageData(message.data());
@@ -87,4 +87,9 @@ void ws_init()
 void ws_poll()
 {
   client.poll();
+}
+
+void send_sensor_data(String data)
+{
+  client.send("{ \"uid\": \"" + String(getDeviceId()) + "\", \"type\": \"SENSORS_DATA\", \"payload\": " + data + " }");
 }
