@@ -57,10 +57,12 @@ int8_t user_i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t len, void *in
   uint32_t start_transaction = millis();
   uint32_t time_diff = 0;
   uint32_t max_timeout = 10;
-  for (uint8_t i = 0; Wire.available() && (time_diff < max_timeout); i++)
+  uint8_t i = 0;
+  while(Wire.available()/*  && time_diff < max_timeout */)
   {                            // slave may send less than requested
     reg_data[i] = Wire.read(); // receive a byte as character
     time_diff = millis() - start_transaction;
+    i++;
   }
   if (time_diff >= max_timeout)
   {
