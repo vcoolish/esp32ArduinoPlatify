@@ -2,7 +2,7 @@
 #include <ArduinoJson.h>
 #include <ArduinoWebsockets.h>
 
-const char *websockets_server = "ws://192.168.0.107:8080"; //server adress and port
+const char *websockets_server = "ws://192.168.0.109:8080"; //server adress and port
 
 using namespace websockets;
 
@@ -33,6 +33,18 @@ void handleMessageData(String json)
   const String type = doc["type"];
   const String payload = doc["payload"];
   Serial.println("Parsed type " + type + "; payload: " + payload + ".");
+
+  if (type == "COMMAND")
+  {
+    if (payload == "LED_ON")
+    {
+      digitalWrite(2, true);
+    }
+    else if (payload == "LED_OFF")
+    {
+      digitalWrite(2, false);
+    }
+  }
 }
 
 void onMessageCallback(WebsocketsMessage message)

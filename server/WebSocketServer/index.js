@@ -7,10 +7,10 @@ const timeSeriesDataServise = {};
 const devicesServise = {};
 const usersServise = {};
 
-const noop = () => {};
+const noop = () => { };
 
 class WebSocketServer {
-  constructor({ port=3001, services }) {
+  constructor({ port = 3001, services }) {
     this.clientsStore = new ClientsStore();
     this.wss = new WebSocket.Server({ port });
 
@@ -59,11 +59,25 @@ class WebSocketServer {
   _connectionHandler(ws, req) {
     // console.log("connected ", req.socket.remoteAddress);
 
+    let state = true;
+    const interval = setInterval(() => {
+      let payload;
+      if (state) {
+        payload = "LED_ON"
+      }
+      else {
+        payload = "LED_OFF"
+      }
+      ws.send(JSON.stringify({ type: "COMMAND", payload }));
+      state = !state;
+    }, 4000);
+
     ws.on('message', (message) => {
       this._incomingMessagesHandler(ws, message);
     });
 
     ws.on('close', () => {
+      clearInterval(interval);
       this.clientsStore.removeClientByWS(ws);
       console.log("ws.on('close')", /*ws*/);
     });
@@ -74,12 +88,12 @@ class WebSocketServer {
 
     ws.send(message); /* test echo */
 
-    const callback = () => {};
+    const callback = () => { };
 
     try {
       const objectMessage = JSON.parse(message);
       this.messagesHandler.handleMessage(ws, objectMessage, callback);
-    } catch(e) {
+    } catch (e) {
       console.error(e);
     }
   }

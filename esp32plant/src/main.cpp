@@ -107,7 +107,7 @@ void main_init()
 
   // init sensor
   // struct bme280_dev dev;
-  sensor_init();
+  // sensor_init();
 
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -122,10 +122,9 @@ void main_loop()
 {
   ws_poll();
   ws.cleanupClients();
-  digitalWrite(ledPin, ledState);
 
   // print_sensor_data();
-  send_sensor_data(get_json_sensor_data());
+  // send_sensor_data(get_json_sensor_data());
 
-  delay(1000);
+  // delay(1000);
 }
