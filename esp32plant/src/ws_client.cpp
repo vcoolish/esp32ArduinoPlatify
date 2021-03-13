@@ -89,9 +89,9 @@ void ws_init()
   client.connect(websockets_server);
 
   Serial.println(String(getDeviceId()));
-  client.send("{ \"uid\": \"" + String(getDeviceId()) + "\", \"type\": \"CONNECTION_DATA\" }");
   // Send a message
-  client.send("Hi Server!");
+  client.send("{ \"uid\": \"" + String(getDeviceId()) + "\", \"type\": \"CONNECTION_DATA\" }");
+
   // Send a ping
   client.ping();
 }
