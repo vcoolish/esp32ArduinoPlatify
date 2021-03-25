@@ -3,6 +3,7 @@ const config = require('./config')[envType];
 console.log('process.env.NODE_ENV', envType);
 
 const WebSocketServer = require('./WebSocketServer');
+const CommandLine = require('./WebSocketServer/CommandLine');
 
 // const app = require('express')();
 // const http = require('http').Server(app);
@@ -23,6 +24,7 @@ const clientsStore = {};
 const wss = new WebSocketServer({ port: config.wsWebserverPort });
 wss.run();
 
+new CommandLine((s)=>wss.sendCommand(s));
 
 module.exports = {
   wss,
