@@ -56,20 +56,19 @@ class WebSocketServer {
     });
   }
 
-  _connectionHandler(ws, req) {
-    // console.log("connected ", req.socket.remoteAddress);
+  sendCommand(command) {
+    const message = JSON.stringify({ type: "COMMAND", payload: command });
+    this.wss.clients.forEach((ws) => ws.send(message));
+  }
 
-    let state = true;
+  _connectionHandler(ws, req) {
+    console.log("connected ", req.socket.remoteAddress);
+
+    let index = 0;
+    const commands = ["LED_ON", "LED_OFF", "TIME"];
     const interval = setInterval(() => {
-      let payload;
-      if (state) {
-        payload = "LED_ON"
-      }
-      else {
-        payload = "LED_OFF"
-      }
-      ws.send(JSON.stringify({ type: "COMMAND", payload }));
-      state = !state;
+      ws.send(JSON.stringify({ type: "COMMAND", payload: commands[index] }));
+      index = (index + 1) % commands.length;
     }, 4000);
 
     ws.on('message', (message) => {

@@ -46,7 +46,6 @@ void main_init()
 void main_loop()
 {
   ws_poll();
-  ws.cleanupClients();
 
   // print_sensor_data();
   // send_sensor_data(get_json_sensor_data());

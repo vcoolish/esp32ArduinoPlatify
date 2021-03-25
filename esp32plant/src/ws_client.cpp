@@ -2,7 +2,7 @@
 #include <ArduinoJson.h>
 #include <ArduinoWebsockets.h>
 
-const char *websockets_server = "ws://192.168.0.109:8080"; //server adress and port
+const char *websockets_server = "ws://192.168.0.114:8080"; //server adress and port
 
 using namespace websockets;
 
@@ -44,6 +44,12 @@ void handleMessageData(String json)
     {
       digitalWrite(2, false);
     }
+    else if (payload == "TIME")
+    {
+      struct timeval tv;
+      gettimeofday(&tv, NULL);
+      send_data(String(tv.tv_sec));
+    }
   }
 }
 
@@ -58,6 +64,21 @@ void onMessageCallback(WebsocketsMessage message)
   }
 }
 
+WebsocketsClient client;
+void tryConnect()
+{
+  bool connected;
+  do
+  {
+    connected = client.connect(websockets_server);
+    if (!connected)
+    {
+      Serial.println("Trying to connect...");
+      delay(1000);
+    }
+  } while (!connected);
+}
+
 void onEventsCallback(WebsocketsEvent event, String data)
 {
   if (event == WebsocketsEvent::ConnectionOpened)
@@ -67,6 +88,7 @@ void onEventsCallback(WebsocketsEvent event, String data)
   else if (event == WebsocketsEvent::ConnectionClosed)
   {
     Serial.println("Connnection Closed");
+    tryConnect();
   }
   else if (event == WebsocketsEvent::GotPing)
   {
@@ -78,7 +100,6 @@ void onEventsCallback(WebsocketsEvent event, String data)
   }
 }
 
-WebsocketsClient client;
 void ws_init()
 {
   // Setup Callbacks
@@ -86,7 +107,7 @@ void ws_init()
   client.onEvent(onEventsCallback);
 
   // Connect to server
-  client.connect(websockets_server);
+  tryConnect();
 
   Serial.println(String(getDeviceId()));
   // Send a message
@@ -99,6 +120,11 @@ void ws_init()
 void ws_poll()
 {
   client.poll();
+}
+
+void send_data(String data)
+{
+  client.send("{ \"uid\": \"" + String(getDeviceId()) + "\", \"type\": \"DATA\", \"payload\": " + data + " }");
 }
 
 void send_sensor_data(String data)
