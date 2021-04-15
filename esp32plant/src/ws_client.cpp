@@ -2,7 +2,11 @@
 #include <ArduinoJson.h>
 #include <ArduinoWebsockets.h>
 
-const char *websockets_server = "ws://192.168.0.114:8080"; //server adress and port
+#define RELAY_ONE_PIN 13
+#define RELAY_TWO_PIN 32
+#define RELAY_THREE_PIN 33
+
+const char *websockets_server = "ws://192.168.0.100:8080"; //server adress and port
 
 using namespace websockets;
 
@@ -23,6 +27,19 @@ String mac2String(byte ar[])
 String getDeviceId()
 {
   return mac2String((byte *)ESP.getEfuseMac());
+}
+
+void relay_on(int pin)
+{
+  Serial.println("ON " + String(pin));
+  pinMode(pin, OUTPUT);
+  digitalWrite(pin, LOW);
+}
+
+void relay_off(int pin)
+{
+  Serial.println("OFF " + String(pin));
+  pinMode(pin, INPUT);
 }
 
 void handleMessageData(String json)
@@ -49,6 +66,14 @@ void handleMessageData(String json)
       struct timeval tv;
       gettimeofday(&tv, NULL);
       send_data(String(tv.tv_sec));
+    }
+    else if (payload == "WATER_ON")
+    {
+      relay_on(RELAY_ONE_PIN);
+    }
+    else if (payload == "WATER_OFF")
+    {
+      relay_off(RELAY_ONE_PIN);
     }
   }
 }

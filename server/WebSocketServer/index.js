@@ -65,7 +65,7 @@ class WebSocketServer {
     console.log("connected ", req.socket.remoteAddress);
 
     let index = 0;
-    const commands = ["LED_ON", "LED_OFF", "TIME"];
+    const commands = ["LED_ON", "LED_OFF", "TIME", "WATER_ON", "WATER_OFF"];
     const interval = setInterval(() => {
       ws.send(JSON.stringify({ type: "COMMAND", payload: commands[index] }));
       index = (index + 1) % commands.length;
