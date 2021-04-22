@@ -1,13 +1,26 @@
 require('dotenv').config(/*{ path: ".env" }*/);
 
+const env = process.env;
 module.exports = {
     production: {
-        wsWebserverPort: process.env.WS_WEB_SERVER_PORT,
+        wsWebserverPort: env.WS_WEB_SERVER_PORT,
+        db: {
+            host : env.PG_HOST,
+            user : env.PG_USER,
+            password : env.PG_PASSWORD,
+            database : env.PG_DATABASE
+        },
     },
     development: {
-        wsWebserverPort: process.env.WS_WEB_SERVER_PORT,
+        wsWebserverPort: env.WS_WEB_SERVER_PORT,
+        db: {
+            host : env.PG_HOST,
+            user : env.PG_USER,
+            password : env.PG_PASSWORD,
+            database : env.PG_DATABASE
+        },
     },
     test: {
-        wsWebserverPort: process.env.TEST_WS_WEB_SERVER_PORT,
+        wsWebserverPort: env.TEST_WS_WEB_SERVER_PORT,
     }
 };
