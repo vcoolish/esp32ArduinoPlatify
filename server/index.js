@@ -28,9 +28,9 @@ const pg = require('knex')({
 const wss = new WebSocketServer({ port: config.wsWebserverPort });
 wss.run();
 
-const cli = new CommandLine((s)=>wss.sendCommand(s));
+const cli = new CommandLine((s) => wss.sendCommand(s));
 
-const sch = new Scheduler({send: wss.sendCommand});
+const sch = new Scheduler({ send: wss.sendCommand });
 
 module.exports = {
   wss, cli, sch
