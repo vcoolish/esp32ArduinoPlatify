@@ -48,3 +48,30 @@
   ]
 }
 ```
+
+### Scheduler
+Server's cron collects tasks of current time (minute) and send them to ESP(s).
+
+When ESP starts up it requests for current (started and active) tasks.
+
+Advanced: 
+Newly created task and assigned to ESP should be not only saved to DB, but push to ESP if needed.
+
+#### Task
+Example of a DB entity:
+```json
+{
+  "id": 1,
+  "name": "Morning light",
+  "io": "LED_ON",
+  "start": "4:10:00",
+  "duration": 7200000
+}
+```
+An example of a sent task to ESP:
+```json
+{
+  "io": "LED_ON",
+  "duration": 7200000
+}
+```
