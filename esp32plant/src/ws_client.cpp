@@ -42,39 +42,52 @@ void relay_off(int pin)
   pinMode(pin, INPUT);
 }
 
-void handleMessageData(String json)
+void handleCommand(const char *command)
+{
+  if (command == "LED_ON")
+  {
+    digitalWrite(2, true);
+  }
+  else if (command == "LED_OFF")
+  {
+    digitalWrite(2, false);
+  }
+  else if (command == "TIME")
+  {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    send_data(String(tv.tv_sec));
+  }
+  else if (command == "WATER_ON")
+  {
+    relay_on(RELAY_ONE_PIN);
+  }
+  else if (command == "WATER_OFF")
+  {
+    relay_off(RELAY_ONE_PIN);
+  }
+}
+
+void handleTask(const char *task)
+{
+}
+
+void handleMessageData(char json[])
 {
   DynamicJsonDocument doc(1024);
   deserializeJson(doc, json);
 
-  const String type = doc["type"];
-  const String payload = doc["payload"];
+  const char *type = doc["type"];
+  const char *payload = doc["payload"];
   Serial.println("Parsed type " + type + "; payload: " + payload + ".");
 
   if (type == "COMMAND")
   {
-    if (payload == "LED_ON")
-    {
-      digitalWrite(2, true);
-    }
-    else if (payload == "LED_OFF")
-    {
-      digitalWrite(2, false);
-    }
-    else if (payload == "TIME")
-    {
-      struct timeval tv;
-      gettimeofday(&tv, NULL);
-      send_data(String(tv.tv_sec));
-    }
-    else if (payload == "WATER_ON")
-    {
-      relay_on(RELAY_ONE_PIN);
-    }
-    else if (payload == "WATER_OFF")
-    {
-      relay_off(RELAY_ONE_PIN);
-    }
+    handleCommand(&payload);
+  }
+  else if (type == "TASK")
+  {
+    handleTask(&payload);
   }
 }
 
