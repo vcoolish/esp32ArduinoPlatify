@@ -2,6 +2,7 @@
 #include "advertise_services.h"
 #include "ws_client.h"
 #include "bme_sensor.h"
+#include "timer.h"
 #include "./lib/bme280.h"
 #include <Wire.h>
 
@@ -19,6 +20,8 @@ void main_init()
 
   pinMode(ledPin, OUTPUT);
   digitalWrite(ledPin, LOW);
+
+  timerInit();
 
   // Connect to Wi-Fi
   WiFi.begin(ssid, password);
@@ -45,6 +48,7 @@ void main_init()
 
 void main_loop()
 {
+  timerLoop();
   ws_poll();
 
   // print_sensor_data();

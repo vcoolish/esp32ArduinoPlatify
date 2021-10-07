@@ -6,7 +6,8 @@
 #define RELAY_TWO_PIN 32
 #define RELAY_THREE_PIN 33
 
-const char *websockets_server = "ws://192.168.0.100:8080"; //server adress and port
+const char *websockets_server = "ws://192.168.0.104:8080"; //server adress and port
+extern volatile uint32_t sharedCounter;
 
 using namespace websockets;
 
@@ -72,22 +73,35 @@ void handleTask(String task)
 {
 }
 
+void handlePinTimeout(uint32_t timeout)
+{
+  sharedCounter = timeout;
+}
+
 void handleMessageData(String json)
 {
   DynamicJsonDocument doc(1024);
   deserializeJson(doc, json);
 
   String type = doc["type"];
-  String payload = doc["payload"];
-  Serial.println("Parsed type " + type + "; payload: " + payload + ".");
+  Serial.println("Parsed type " + type + ".");
 
   if (type == "COMMAND")
   {
+    String payload = doc["payload"];
     handleCommand(payload);
   }
   else if (type == "TASK")
   {
+    String payload = doc["payload"];
     handleTask(payload);
+  }
+  else if (type == "PIN_TIMEOUT")
+  {
+    uint32_t payload = doc["payload"];
+    Serial.print(payload);
+    Serial.println(" timeout");
+    handlePinTimeout(payload);
   }
 }
 
