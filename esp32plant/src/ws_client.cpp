@@ -42,7 +42,7 @@ void relay_off(int pin)
   pinMode(pin, INPUT);
 }
 
-void handleCommand(const char *command)
+void handleCommand(String command)
 {
   if (command == "LED_ON")
   {
@@ -68,26 +68,26 @@ void handleCommand(const char *command)
   }
 }
 
-void handleTask(const char *task)
+void handleTask(String task)
 {
 }
 
-void handleMessageData(char json[])
+void handleMessageData(String json)
 {
   DynamicJsonDocument doc(1024);
   deserializeJson(doc, json);
 
-  const char *type = doc["type"];
-  const char *payload = doc["payload"];
+  String type = doc["type"];
+  String payload = doc["payload"];
   Serial.println("Parsed type " + type + "; payload: " + payload + ".");
 
   if (type == "COMMAND")
   {
-    handleCommand(&payload);
+    handleCommand(payload);
   }
   else if (type == "TASK")
   {
-    handleTask(&payload);
+    handleTask(payload);
   }
 }
 
