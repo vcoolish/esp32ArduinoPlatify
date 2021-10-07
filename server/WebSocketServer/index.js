@@ -57,26 +57,26 @@ class WebSocketServer {
   }
 
   sendCommand(command) {
-    const message = JSON.stringify({ type: "COMMAND", payload: command });
+    const message = JSON.stringify({ type: "PIN_TIMEOUT", payload: command });
     this.wss.clients.forEach((ws) => ws.send(message));
   }
 
   _connectionHandler(ws, req) {
     console.log("connected ", req.socket.remoteAddress);
 
-    let index = 0;
-    const commands = ["LED_ON", "LED_OFF", "TIME", "WATER_ON", "WATER_OFF"];
-    const interval = setInterval(() => {
-      ws.send(JSON.stringify({ type: "COMMAND", payload: commands[index] }));
-      index = (index + 1) % commands.length;
-    }, 4000);
+    // let index = 0;
+    // const commands = ["LED_ON", "LED_OFF", "TIME", "WATER_ON", "WATER_OFF"];
+    // const interval = setInterval(() => {
+    //   ws.send(JSON.stringify({ type: "COMMAND", payload: commands[index] }));
+    //   index = (index + 1) % commands.length;
+    // }, 4000);
 
     ws.on('message', (message) => {
       this._incomingMessagesHandler(ws, message);
     });
 
     ws.on('close', () => {
-      clearInterval(interval);
+      // clearInterval(interval);
       this.clientsStore.removeClientByWS(ws);
       console.log("ws.on('close')", /*ws*/);
     });
